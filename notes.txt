@@ -62,6 +62,40 @@ function allows a thread to terminate itself and return a value to the caller. I
 threads will still running. In this way, the developer can implement proper synchronizing mechanisms to wait for other threads to finish 
 before exiting the main thread or the entire program.
 
+5- NUMBER OF THREADS THAT CAN BE RUN PER CORE
+The number of threads that can be run per core depends on the specific processor architecture and the technology used to create the threads.
+
+A CPU core is designed to execute one instruction at a time, however, certain technologies like Simultaneous Multi-Threading (SMT) or Hyper-Threading (HT) can be used to run multiple threads on a single core. These technologies allow a single physical core to appear as two or more logical cores to the operating system.
+
+For example, Intel's Hyper-Threading Technology allows a single physical core to handle two threads simultaneously, thus each core can handle two threads at a time. However, the performance improvement of running two threads on a single core will depend on the workload, if the threads are running different types of instruction that can be executed in parallel it will be more efficient, but if both threads are competing for the same resources, it can actually decrease performance.
+
+On the other hand, some ARM-based processors like Apple's A-series processors use SMT and can handle 4 threads on each physical core.
+
+It's worth noting that the performance improvement from running multiple threads on a single core will depend on the specific application and workload, some applications may not benefit much from running multiple threads on a single core, and in some scenarios, it can even reduce performance.
+
+In general, it's not possible to give a specific number of threads that can be run per core
+
+6 - what if my threads are using the same resources then i have to synchronize them either using conditional variable synchronization or via mutexes  in those cases is my code going to run sequentially or in parallel or that has to do with the number of cores not the synchronization aspect
+
+When multiple threads are using the same shared resources, it's important to synchronize them in order to prevent race conditions and other concurrency errors. The synchronization can be done using different techniques such as conditional variable synchronization or mutual exclusion (mutexes).
+
+When threads are synchronized, the code will execute in a sequential manner, where one thread will execute its critical section (the part of the code that uses the shared resource) while the others are blocked and they'll wait until they can enter. In this way, only one thread at a time can access the shared resource, preventing race conditions and other concurrency errors.
+
+This synchronization can have an impact on the performance, depending on the number of threads, the amount of shared resources, and the specific application and workload. If a lot of time is spent waiting for a shared resource to be released, performance may suffer. However, if the shared resources are used infrequently, the performance impact may be minimal.
+
+It's worth noting that the number of cores available in a system does not directly affect the synchronization aspect, but it does affect the performance. With multiple cores, the operating system can schedule different threads to execute in parallel on different cores, which can improve performance, even if the threads are synchronized. With only one core, even if the threads are synchronized, the system can only run one thread at a time, so performance will suffer if the system is heavily threaded.
+
+In summary, when multiple threads are using the same shared resources, it is important to synchronize them to prevent concurrency errors. When threads are synchronized, the code
+
+7- so if i have multiple cores the threads run sequentially when they only access or try to modify shared resources after that they start running simultaneously  
+
+Yes, that is correct. If you have multiple cores, and your threads are accessing or modifying shared resources, the threads will have to wait for the other threads to release the resources before they can proceed. This can result in the threads running sequentially when they are trying to access or modify shared resources.
+
+However, once a thread has finished using the shared resource, it can release the resource and allow other threads to access it, allowing them to proceed simultaneously. This means that, if the threads are not constantly accessing or modifying the shared resources, they can run in parallel on different cores, improving performance.
+
+It's important to note that if the shared resources are used frequently and if the synchronization overhead is too high, the performance may not improve even with multiple cores, and it can even be worse than a single core system.
+
+So, in summary, when threads are accessing or modifying shared resources, they will run sequentially in order to prevent race conditions and other concurrency errors, but once the thread has finished using the shared resource, it can release it and allowing other threads to access it and run simultaneously, taking advantage of multiple cores to improve performance.
 ///////////// ADDITIONAL INFORMATION /////////////
 
 1- WHAT IS A CONTEXT-SWITCH
@@ -87,4 +121,5 @@ It's worth noting that while hyper-threading can improve performance by allowing
 replacement for having multiple physical cores. The performance improvement will depend on the workload, application and the number of 
 threads being run. Additionally, some tasks may not benefit much from hyper-threading, and in some scenarios, it can even reduce performance.
 
-Also it's important to notice that not all the processors have hyper-threading technology, it is only present in some specific Intel processors.
+Also it's important to notice that not all the processors have hyper-threading technology, it is only present in some specific Intel 
+processors.
