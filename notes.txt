@@ -1,0 +1,90 @@
+1 - CORES VS THREADS
+
+The terms "cores" and "threads" are often used interchangeably, but they are not exactly the same thing.
+A core is a physical component of a CPU that can execute instructions independently of the other cores.
+A CPU can have multiple cores, and each core can execute its own set of instructions, allowing for parallel processing and improved performance.
+
+Thread, on the other hand, is a term that refers to a sequence of instructions that can be executed by a CPU.
+A thread is a lightweight execution unit, it can be scheduled and dispatched by the operating system scheduler.
+A CPU can execute multiple threads, with each thread running its own set of instructions, allowing for concurrent execution 
+and improved performance.
+
+So, in short, cores are physical components of a CPU that can execute instructions independently and provide the ability to execute
+multiple threads, while threads are sequences of instructions that can be executed by cores, they are scheduled and dispatched by 
+the operating system scheduler and they provide concurrency and improved performance.
+
+Therefore, while the terms "cores" and "threads" are related, they refer to different aspects of a CPU's capabilities.
+
+2- PHYSICAL THREADS VS LOGICAL THREADS
+
+Physical threads and logical cores are related concepts, but they are not the same thing.
+
+A physical thread (also known as a physical core) is an actual physical processor core inside a CPU.
+ It is a physical component of a processor that can execute instructions independently of the other cores.
+  Having multiple physical cores allows a CPU to execute multiple threads simultaneously, improving performance.
+
+A logical core (also known as a logical thread or virtual core) is a virtual core that is created by technologies like
+hyper-threading or Simultaneous Multi-Threading (SMT). These technologies allow a single physical core to appear as two
+or more logical cores to the operating system. Logical cores are not actual physical cores, but are instead a way for a processor 
+to more efficiently utilize its resources and improve performance.
+
+In summary, a physical thread is a physical component of a CPU that can execute instructions independently, while a logical core is 
+a virtual component created by technologies like hyper-threading and SMT to more efficiently utilize a CPU's resources and improve performance.
+
+3- DO THREADS RUN IN PARALLEL (SIMULTANEOUSLY) OR IN SEQUENCE
+
+Threads can run either in parallel or in a sequence, depending on the number of available CPU cores and the scheduling algorithm used by the 
+operating system.
+
+When multiple threads are running on a system with multiple CPU cores, the operating system's scheduler can schedule those threads to run 
+simultaneously (in parallel) on different cores. This allows the system to take advantage of multiple cores and perform multiple tasks at 
+the same time, improving performance.
+
+However, on a system with a single CPU core, even if you have multiple threads, only one thread can execute at a time. In this case, 
+the scheduler will switch between the threads quickly, giving each thread a small slice of time to execute. This is called time-sharing
+and it allows for multiple threads to make progress, even though only one thread is running at a time.
+
+In addition to number of cores, the behavior of threads is also impacted by the scheduler algorithm and the priorities of the threads.
+It's worth noting that threads can also run in parallel withing the same core thanks to some advanced features like hyper-threading.
+
+4- WHAT HAPPENS IF ONE THREAD USES THE EXIT() FUNCTION
+
+If one thread exits using the exit() function, it will cause the entire process to terminate, which means that all of the threads in 
+the process will be terminated as well. This is because the exit() function is a global function and it terminates the execution of 
+the program and releases all the resources associated with the process, including all threads.
+
+This can be dangerous if other threads are holding resources that need to be freed or have other cleanup to perform before exiting. 
+If a thread calls exit() while other threads are still running, the other threads will not have a chance to perform any cleanup operations 
+and release any resources they may be holding.
+
+A more graceful way to handle the termination of a thread is to use the pthread_exit() function instead. The pthread_exit() 
+function allows a thread to terminate itself and return a value to the caller. It does not terminate the entire process and the other 
+threads will still running. In this way, the developer can implement proper synchronizing mechanisms to wait for other threads to finish 
+before exiting the main thread or the entire program.
+
+///////////// ADDITIONAL INFORMATION /////////////
+
+1- WHAT IS A CONTEXT-SWITCH
+
+A context switch in an operating system occurs when the CPU switches from running one task or process to another. 
+This typically occurs when a task or process has completed its execution or has been blocked, and the operating system needs to schedule 
+another task or process to run on the CPU. The process of a context switch involves saving the current state of the task or process that 
+is being switched out (such as register values, program counter, and memory map) and restoring the state of the task or process that is 
+being switched in. Context switches can be relatively expensive in terms of CPU time, as they require the operating system to perform a 
+significant amount of work in order to switch between tasks or processes.
+
+2- HYPERTHREADING
+
+Hyper-threading is a technology used in Intel processors to increase the performance of CPU cores. It allows a single physical core to 
+act as if it were two logical cores, also known as threads. By splitting a core's resources into two threads, hyper-threading can improve 
+the efficiency of the CPU and improve performance by allowing multiple threads to run simultaneously.
+
+When hyper-threading is enabled, the operating system sees two logical processors for each physical core, and schedules threads on them as 
+if they were two distinct cores. This allows the operating system to schedule more threads than there are physical cores, potentially 
+improving performance.
+
+It's worth noting that while hyper-threading can improve performance by allowing the CPU to better utilize its resources, it's not a 
+replacement for having multiple physical cores. The performance improvement will depend on the workload, application and the number of 
+threads being run. Additionally, some tasks may not benefit much from hyper-threading, and in some scenarios, it can even reduce performance.
+
+Also it's important to notice that not all the processors have hyper-threading technology, it is only present in some specific Intel processors.
