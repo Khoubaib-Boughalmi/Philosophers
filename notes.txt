@@ -96,6 +96,58 @@ However, once a thread has finished using the shared resource, it can release th
 It's important to note that if the shared resources are used frequently and if the synchronization overhead is too high, the performance may not improve even with multiple cores, and it can even be worse than a single core system.
 
 So, in summary, when threads are accessing or modifying shared resources, they will run sequentially in order to prevent race conditions and other concurrency errors, but once the thread has finished using the shared resource, it can release it and allowing other threads to access it and run simultaneously, taking advantage of multiple cores to improve performance.
+
+8 - WHAT IF multiple threads tries to access that locked resource will they be blocked in a queued way or only the first thread will be blocked and the other ignored
+
+f multiple threads try to access the same locked shared resource (via a mutex), they will be blocked in a queued manner. This means that the operating system will maintain a queue of threads waiting to acquire the locked mutex, and when the mutex is unlocked, the operating system will unblock the next thread in the queue.
+
+When a thread attempts to acquire a locked mutex, it will be blocked and added to the queue of threads waiting to acquire the mutex. The operating system will maintain the order of the threads in the queue, so that the first thread to be blocked will be the first one to be unblocked when the mutex is unlocked.
+
+When the thread that holds the mutex releases it, the operating system will unblock the next thread in the queue and that thread will be allowed to acquire the mutex and access the shared resource.
+
+This way, the operating system ensures that the shared resource is accessed in a controlled and predictable manner, and that the threads are unblocked in the order in which they were blocked.
+
+It's worth mentioning that, the behavior of the queue may vary depending on the implementation of the Operating System or the library used to handle the mutex (POSIX, Windows, etc). For example, some implementation may prioritize the thread based on the scheduling policy or the thread priority.
+
+In summary, when multiple threads try to access the same locked shared resource via a mutex, they will be blocked in a queued manner, with the operating system maintaining the order of the threads in the queue. When the mutex is unlocked, the operating system will unblock the next thread in the queue, allowing it to acquire the mutex and access the shared resource.
+
+9- PTHREAD_MUTEX_INITIALIZER vs pthread_mutex_init()
+
+PTHREAD_MUTEX_INITIALIZER is a macro that can be used to statically initialize a mutex variable, while pthread_mutex_init() is a function that can be used to dynamically initialize a mutex variable.
+
+When you use the PTHREAD_MUTEX_INITIALIZER macro, the mutex variable is initialized with a set of default attributes at the time of declaration, and it can be used immediately without the need to call pthread_mutex_init().
+
+Here is an example of how you can use PTHREAD_MUTEX_INITIALIZER to statically initialize a mutex variable:
+
+pthread_mutex_t myMutex = PTHREAD_MUTEX_INITIALIZER;
+
+On the other hand, pthread_mutex_init() function allows you to specify a set of attributes when initializing the mutex variable.
+
+pthread_mutex_t myMutex;
+pthread_mutex_init(&myMutex, NULL);
+
+You can pass a second argument NULL which specifies that the default attributes should be used, or a pointer to a pthread_mutexattr_t structure to specify custom attributes.
+
+In summary, PTHREAD_MUTEX_INITIALIZER allows you to statically initialize a mutex variable with default attributes, while pthread_mutex_init() function allows you to dynamically initialize a mutex variable and specify custom attributes. PTHREAD_MUTEX_INITIALIZER is usually used when the mutex is defined as a global or static variable and pthread_mutex_init() is used for mutexes that are dynamically allocated.
+
+10- THREAD DEADLOCKS
+
+A deadlock is a situation that occurs when two or more threads are unable to proceed because each thread is waiting for one of the other threads to take a specific action. This results in all threads being blocked and unable to make progress. In the case of threads, a deadlock can happen when two or more threads are trying to acquire a set of locked resources, and each thread is waiting for a resource that is held by one of the other threads.
+
+A common example of a deadlock involving threads is when two threads each try to acquire a lock on a different resource, and then try to acquire the other resource in the wrong order. For example, suppose two threads are trying to acquire a lock on a shared resource A and B. If thread 1 acquires the lock on resource A and then tries to acquire the lock on resource B, while thread 2 acquires the lock on resource B and then tries to acquire the lock on resource A, both threads will be waiting for the other thread to release the resource they are trying to acquire, and neither thread will be able to proceed.
+
+Deadlocks can be caused by various factors, such as poor synchronization, incorrect usage of shared resources, or bugs in the code. It's important to be aware of the potential for deadlocks when working with multithreading and to design your code and algorithms to avoid them.
+
+There are several ways to prevent and detect deadlocks, some of them are:
+
+    Avoiding the use of multiple locks.
+    Using lock-free data structures or algorithms.
+    Using timeouts to break deadlocks.
+    Using a global ordering of resources to prevent cycles.
+    Deadlock detection algorithms, which can detect a deadlock and then take action to resolve it.
+
+It's worth mentioning that deadlocks can be difficult to detect and reproduce, making them a hard problem to solve. It's important to be aware of the potential for deadlocks and to take appropriate precautions to prevent them, and to test your code thoroughly for deadlocks.
+
 ///////////// ADDITIONAL INFORMATION /////////////
 
 1- WHAT IS A CONTEXT-SWITCH
