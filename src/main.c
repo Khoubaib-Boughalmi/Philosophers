@@ -1,6 +1,16 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <pthread.h>
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   main.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: kboughal <kboughal@student.1337.ma >       +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/01/14 16:30:12 by kboughal          #+#    #+#             */
+/*   Updated: 2023/01/14 16:59:52 by kboughal         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "philosphers.h"
 
 #define NUM_PHILO 5
 
@@ -18,25 +28,27 @@ void    *philosopher(void *arg)
 
 int ft_init_philos(int nop)
 {
-    int         i;
-    int         res;
-    pthread_t   *pth_lst;
+    int             i;
+    int             res;
+    pthread_t       *pth_lst;
+    t_philosopher   *philo;
 
     i = 0;
-    pth_lst = (pthread_t *)malloc(nop * sizeof(pthread_t));
-    if(!pth_lst)
+    philo = (t_philosopher *)malloc(nop * sizeof(t_philosopher));
+    if(!philo)
         return (0);
     while (i < nop)
     {
-        res = pthread_create(pth_lst + i, NULL, philosopher, NULL);
+        philo->id = i;
+        res = pthread_create(&(philo[i]->philo_thr), NULL, philosopher, NULL);
         if(res)
             return (0);
         i++;
     }
-        i = 0;
+    i = 0;
     while (i < nop)
     {
-        res = pthread_join(pth_lst[i], NULL);
+        res = pthread_join(philo[i]->philo_thr, NULL);
         if(res)
             return (0);
         i++;
@@ -81,10 +93,9 @@ int *ft_init_forks(int nop)
     return (forks);
 }
 
-
 int main(int argc, char *argv[])
 {
-    if(!ft_init_philos(NUM_PHILO) || ! ft_init_mutexes(NUM_PHILO) || ft_init_forks(NUM_PHILO))
+    if(!ft_init_mutexes(NUM_PHILO) || !ft_init_philos(NUM_PHILO) || ft_init_forks(NUM_PHILO))
         return (0);
     printf("PHILOS AND MUTEXES CREATED SUCCESSFULLY\n");
     return (0);
