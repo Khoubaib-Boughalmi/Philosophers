@@ -6,7 +6,7 @@
 /*   By: kboughal <kboughal@student.1337.ma >       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/14 16:30:12 by kboughal          #+#    #+#             */
-/*   Updated: 2023/01/14 16:59:52 by kboughal         ###   ########.fr       */
+/*   Updated: 2023/01/14 17:42:19 by kboughal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,15 +40,16 @@ int ft_init_philos(int nop)
     while (i < nop)
     {
         philo->id = i;
-        res = pthread_create(&(philo[i]->philo_thr), NULL, philosopher, NULL);
+        res = pthread_create(&(philo[i].philo_thr), NULL, philosopher, NULL);
         if(res)
             return (0);
+        philo->pth_mutex = 
         i++;
     }
     i = 0;
     while (i < nop)
     {
-        res = pthread_join(philo[i]->philo_thr, NULL);
+        res = pthread_join(philo[i].philo_thr, NULL);
         if(res)
             return (0);
         i++;
