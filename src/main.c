@@ -7,6 +7,15 @@
 int g_var = 0;
 pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
+void    *philosopher(void *arg)
+{
+    pthread_mutex_lock(&mutex);
+    printf("PHILOS NUMBER #%d SAYS HI\n", g_var);
+    g_var++;
+    pthread_mutex_unlock(&mutex);
+    return (NULL);
+}
+
 int ft_init_philos(int nop)
 {
     int         i;
@@ -57,8 +66,10 @@ int ft_init_mutexes(int nop)
 
 int *ft_init_forks(int nop)
 {
+    int i;
     int *forks;
 
+    i = 0;
     forks = (int *)malloc(nop * sizeof(int));
     if(!forks)
         return (0);
@@ -70,14 +81,6 @@ int *ft_init_forks(int nop)
     return (forks);
 }
 
-void    *philosopher(void *arg)
-{
-    pthread_mutex_lock(&mutex);
-    printf("PHILOS NUMBER #%d SAYS HI\n", g_var);
-    g_var++;
-    pthread_mutex_unlock(&mutex);
-    return (NULL);
-}
 
 int main(int argc, char *argv[])
 {
