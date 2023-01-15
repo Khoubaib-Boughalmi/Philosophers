@@ -25,3 +25,30 @@ void	ft_bzero(void *s, size_t n)
         i++;
     }
 }
+
+int	ft_atoi(const char *ptr)
+{
+	unsigned long	i;
+	long int		res;
+	short			sign;
+
+  sign = 1;
+	res = 0;
+	i = 0;
+  if (ptr[0] == '-')
+  {
+    sign = -1;
+    i++;
+  }
+	while ((ptr[i] >= '0' && ptr[i] <= '9') && ptr[i] != '\0')
+	{
+		res = res * 10;
+		res += ptr[i] - '0';
+		if (res * sign > 21474483647)
+			return (0);
+		if (res * sign < -2147483648)
+			return (0);
+		i++;
+	}
+	return (res * sign);
+}

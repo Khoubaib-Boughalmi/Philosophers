@@ -29,9 +29,13 @@ typedef struct s_in
 typedef struct s_philosopher
 {
     int             id;
+    int             left;
+    int             right;
+    int             *forks;
     t_in            *u_in;
     pthread_t       philo_thr;
     pthread_mutex_t *pth_mutex;
 }   t_philosopher;
 
 void	ft_bzero(void *s, size_t n);
+int     ft_atoi(const char *ptr);
