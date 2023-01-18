@@ -19,11 +19,15 @@
 
 typedef struct s_in
 {
-    int nop;
-    int ttd;
-    int tte; 
-    int tts;
-    int notme;
+    int             nop;
+    int             ttd;
+    int             tte; 
+    int             tts;
+    int             tmeals;
+    int             pmeals;
+    pthread_mutex_t *forks;
+    pthread_mutex_t lock;
+
 } t_in;
 
 typedef struct s_philosopher
@@ -31,11 +35,13 @@ typedef struct s_philosopher
     int             id;
     int             left;
     int             right;
-    int             *forks;
     t_in            *u_in;
     pthread_t       philo_thr;
-    pthread_mutex_t *pth_mutex;
 }   t_philosopher;
 
 void	ft_bzero(void *s, size_t n);
 int     ft_atoi(const char *ptr);
+
+int create_philos_even(t_in *u_in, t_philosopher *philo);
+int create_philos_odd(t_in *u_in, t_philosopher *philo);
+int create_philos(t_in *u_in, t_philosopher *philo);
