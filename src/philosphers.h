@@ -6,7 +6,7 @@
 /*   By: kboughal <kboughal@student.1337.ma >       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/14 16:10:37 by kboughal          #+#    #+#             */
-/*   Updated: 2023/01/14 16:49:41 by kboughal         ###   ########.fr       */
+/*   Updated: 2023/01/19 20:08:30 by kboughal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,8 @@ typedef struct s_in
     int             pmeals;
     pthread_mutex_t *forks;
     pthread_mutex_t lock;
+    long        birth;
+    long        last_meal;
 
 } t_in;
 
@@ -39,9 +41,11 @@ typedef struct s_philosopher
     pthread_t       philo_thr;
 }   t_philosopher;
 
-void	ft_bzero(void *s, size_t n);
-int     ft_atoi(const char *ptr);
+void        ft_bzero(void *s, size_t n);
+int         ft_atoi(const char *ptr);
 
-int create_philos_even(t_in *u_in, t_philosopher *philo);
-int create_philos_odd(t_in *u_in, t_philosopher *philo);
-int create_philos(t_in *u_in, t_philosopher *philo);
+int         create_philos_even(t_in *u_in, t_philosopher *philo);
+int         create_philos_odd(t_in *u_in, t_philosopher *philo);
+int         create_philos(t_in *u_in, t_philosopher *philo);
+long        ft_get_time(void);
+void        ft_philo_pause(t_philosopher *philo, char c);

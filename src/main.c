@@ -6,11 +6,14 @@
 /*   By: kboughal <kboughal@student.1337.ma >       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/14 16:30:12 by kboughal          #+#    #+#             */
-/*   Updated: 2023/01/14 17:42:19 by kboughal         ###   ########.fr       */
+/*   Updated: 2023/01/19 20:20:39 by kboughal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philosphers.h"
+
+
+pthread_mutex_t mutex;
 
 void    *philosopher(void *arg)
 {
@@ -20,16 +23,33 @@ void    *philosopher(void *arg)
     while (1)
     {    
         pthread_mutex_lock(&(philo->u_in->forks[philo->right]));
-        printf("philo %d has taken a fork\n", philo->id);
+        printf("%ld %d has taken a fork\n", ft_get_time() - philo->u_in->birth, philo->id);
         pthread_mutex_lock(&(philo->u_in->forks[philo->left]));
-        printf("philo %d has taken a fork\n", philo->id);
-        printf("philo %d is eating\n", philo->id);
-        printf("philo %d is sleeping\n", philo->id);
-        printf("philo %d is thinking\n", philo->id);
+        printf("%ld %d has taken a fork\n", ft_get_time() - philo->u_in->birth, philo->id);
+        philo->u_in->last_meal = ft_get_time();
+        printf("%ld %d is eating\n", ft_get_time() - philo->u_in->birth, philo->id);
+        ft_philo_pause(philo, 'e');
         pthread_mutex_unlock(&(philo->u_in->forks[philo->right]));
         pthread_mutex_unlock(&(philo->u_in->forks[philo->left]));
+        printf("%ld %d is sleeping\n", ft_get_time() - philo->u_in->birth, philo->id);
+        ft_philo_pause(philo, 's');
+        printf("%ld %d is thinking\n", ft_get_time() - philo->u_in->birth, philo->id);
     }
     return (NULL);
+}
+
+void ft_philo_pause(t_philosopher *philo, char c)
+{
+    long curr;
+
+    curr = ft_get_time();
+
+    if (c == 'e')
+        while (ft_get_time() - curr <= philo->u_in->tte)
+            usleep(1);
+    else
+        while (ft_get_time() - curr <= philo->u_in->tts)
+            usleep(1);
 }
 
 int ft_init_philos(t_in *u_in, t_philosopher *philo)
@@ -55,9 +75,24 @@ int ft_init_philos(t_in *u_in, t_philosopher *philo)
 
 int create_philos(t_in *u_in, t_philosopher *philo)
 {
-    create_philos_even(u_in, philo);
+    int res;
+    
+    res = create_philos_even(u_in, philo);
+    if (!res)
+        return (0);
     usleep(100);
-    create_philos_odd(u_in, philo);
+    res = create_philos_odd(u_in, philo);
+    if (!res)
+        return (0);
+    int i = 0;
+    while (i < u_in->nop)
+    {
+        res = pthread_join(philo[i].philo_thr, NULL);  
+        if(res)
+            return (0);
+        i++;
+    }
+    return (1);
 }
 
 int create_philos_even(t_in *u_in, t_philosopher *philo)
@@ -70,10 +105,8 @@ int create_philos_even(t_in *u_in, t_philosopher *philo)
     {
         if (i % 2 == 0)
         {
-            res = pthread_create(&(philo[i].philo_thr), NULL, philosopher, &philo[i]);
-            if(res)
-                return (0);
-            res = pthread_join(philo[i].philo_thr, NULL);  
+            philo[i].u_in->birth = ft_get_time();
+            res = pthread_create(&(philo[i].philo_thr), NULL, philosopher, philo + i);
             if(res)
                 return (0);
         }
@@ -88,14 +121,13 @@ int create_philos_odd(t_in *u_in, t_philosopher *philo)
     int res;
 
     i = 0;
+    
     while (i < u_in->nop)
     {
         if (i % 2 != 0)
         {
-            res = pthread_create(&(philo[i].philo_thr), NULL, philosopher, &philo[i]);
-            if(res)
-                return (0);
-            res = pthread_join(philo[i].philo_thr, NULL);  
+            philo[i].u_in->birth = ft_get_time();
+            res = pthread_create(&(philo[i].philo_thr), NULL, philosopher, philo + i);
             if(res)
                 return (0);
         }        
@@ -104,18 +136,19 @@ int create_philos_odd(t_in *u_in, t_philosopher *philo)
     return (1);
 }
 
-pthread_mutex_t *ft_forks(t_in *u_in, pthread_mutex_t *forks)
+int ft_forks(t_in *u_in, pthread_mutex_t **forks)
 {
     int i;
 
     i = -1;
-    forks = (pthread_mutex_t *)malloc(u_in->nop * sizeof(pthread_mutex_t));
+    *forks = (pthread_mutex_t *)malloc(u_in->nop * sizeof(pthread_mutex_t));
     if(!forks)
         return (0);
     while (++i < u_in->nop)
-        pthread_mutex_init(&forks[i], NULL);
-    u_in->forks = forks;
-    return (forks);
+        if(pthread_mutex_init(&(*forks)[i], NULL))
+            return (0);
+    u_in->forks = *forks;
+    return (1);
 }
 
 int check_args(int argc, char *argv[], t_in **u_in)
@@ -145,6 +178,14 @@ int check_args(int argc, char *argv[], t_in **u_in)
     return (1);
 }
 
+long	ft_get_time(void)
+{
+	static struct timeval	tv;
+
+	gettimeofday(&tv, NULL);
+	return ((tv.tv_sec * 1000) + (tv.tv_usec / 1000));
+}
+
 int main(int argc, char *argv[])
 {
     t_in            *u_in;
@@ -153,11 +194,10 @@ int main(int argc, char *argv[])
 
     if(!check_args(argc, argv, &u_in))
         return (0);
-    forks = ft_forks(u_in, forks);
-    if (!forks)
+    if (!ft_forks(u_in, &forks))
         return (0);
     if(!ft_init_philos(u_in, philos))
         return (0);
-    // printf("PHILOS AND MUTEXES CREATED SUCCESSFULLY\n", u_in->nop);
+    //destroy mutexes and free resources
     return (0);
 }
