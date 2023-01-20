@@ -6,14 +6,11 @@
 /*   By: kboughal <kboughal@student.1337.ma >       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/14 16:30:12 by kboughal          #+#    #+#             */
-/*   Updated: 2023/01/19 20:20:39 by kboughal         ###   ########.fr       */
+/*   Updated: 2023/01/20 15:20:38 by kboughal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philosphers.h"
-
-
-pthread_mutex_t mutex;
 
 void    *philosopher(void *arg)
 {
@@ -26,7 +23,9 @@ void    *philosopher(void *arg)
         printf("%ld %d has taken a fork\n", ft_get_time() - philo->u_in->birth, philo->id);
         pthread_mutex_lock(&(philo->u_in->forks[philo->left]));
         printf("%ld %d has taken a fork\n", ft_get_time() - philo->u_in->birth, philo->id);
+        pthread_mutex_lock(&(philo->u_in->lock));
         philo->u_in->last_meal = ft_get_time();
+        pthread_mutex_unlock(&(philo->u_in->lock));
         printf("%ld %d is eating\n", ft_get_time() - philo->u_in->birth, philo->id);
         ft_philo_pause(philo, 'e');
         pthread_mutex_unlock(&(philo->u_in->forks[philo->right]));
@@ -35,7 +34,6 @@ void    *philosopher(void *arg)
         ft_philo_pause(philo, 's');
         printf("%ld %d is thinking\n", ft_get_time() - philo->u_in->birth, philo->id);
     }
-    return (NULL);
 }
 
 void ft_philo_pause(t_philosopher *philo, char c)
@@ -45,31 +43,31 @@ void ft_philo_pause(t_philosopher *philo, char c)
     curr = ft_get_time();
 
     if (c == 'e')
-        while (ft_get_time() - curr <= philo->u_in->tte)
+        while (ft_get_time() - curr < philo->u_in->tte)
             usleep(1);
     else
-        while (ft_get_time() - curr <= philo->u_in->tts)
+        while (ft_get_time() - curr < philo->u_in->tts)
             usleep(1);
 }
 
-int ft_init_philos(t_in *u_in, t_philosopher *philo)
+int ft_init_philos(t_in *u_in, t_philosopher **philo)
 {
     int             i;
     int             res;
 
     i = 0;
-    philo = (t_philosopher *)malloc(u_in->nop * sizeof(t_philosopher));
-    if(!philo)
+    *philo = (t_philosopher *)malloc(u_in->nop * sizeof(t_philosopher));
+    if(!*philo)
         return (0);
     while (i < u_in->nop)
     {
-        philo[i].id = i;
-        philo[i].left= i;
-        philo[i].right = (i + 1) % u_in->nop;
-        philo[i].u_in= u_in;
+        (*philo)[i].id = i;
+        (*philo)[i].left= i;
+        (*philo)[i].right = (i + 1) % u_in->nop;
+        (*philo)[i].u_in= u_in;
         i++;
     }
-    create_philos(u_in, philo);
+    create_philos(u_in, *philo);
     return (1);
 }
 
@@ -77,17 +75,14 @@ int create_philos(t_in *u_in, t_philosopher *philo)
 {
     int res;
     
-    res = create_philos_even(u_in, philo);
-    if (!res)
-        return (0);
-    usleep(100);
-    res = create_philos_odd(u_in, philo);
-    if (!res)
-        return (0);
+    // create_philos_odd(u_in, philo);
+    // usleep(100);
+    create_philos_even(u_in, philo);
     int i = 0;
     while (i < u_in->nop)
     {
-        res = pthread_join(philo[i].philo_thr, NULL);  
+        // pthread_join(philo[i].philo_thr, NULL);
+        pthread_detach(philo[i].philo_thr);
         if(res)
             return (0);
         i++;
@@ -106,11 +101,15 @@ int create_philos_even(t_in *u_in, t_philosopher *philo)
         if (i % 2 == 0)
         {
             philo[i].u_in->birth = ft_get_time();
-            res = pthread_create(&(philo[i].philo_thr), NULL, philosopher, philo + i);
-            if(res)
-                return (0);
+            if (pthread_create(&philo[i].philo_thr, NULL, philosopher, philo + i) != 0)
+			    return (0);
+            // pthread_join(philo[i].philo_thr, NULL);
+		    // if (pthread_detach(philo[i].philo_thr) != 0)
+			//     return (0);
+            // pthread_join(philo[i].philo_thr, NULL);
+            // pthread_detach(philo[i].philo_thr);
         }
-        i++;     
+        i++;
     }
     return (1);
 }
@@ -127,9 +126,13 @@ int create_philos_odd(t_in *u_in, t_philosopher *philo)
         if (i % 2 != 0)
         {
             philo[i].u_in->birth = ft_get_time();
-            res = pthread_create(&(philo[i].philo_thr), NULL, philosopher, philo + i);
-            if(res)
-                return (0);
+            if (pthread_create(&philo[i].philo_thr, NULL, philosopher, philo + i) != 0)
+			    return (0);
+            // pthread_join(philo[i].philo_thr, NULL);
+		    // if (pthread_detach(philo[i].philo_thr) != 0)
+			//     return (0);
+            // pthread_join(philo[i].philo_thr, NULL);
+            // pthread_detach(philo[i].philo_thr);
         }        
         i++;
     }
@@ -178,6 +181,28 @@ int check_args(int argc, char *argv[], t_in **u_in)
     return (1);
 }
 
+int ft_nights_watch(t_in *u_in, t_philosopher *philo)
+{
+    int i;
+
+    i = 0;
+    while (1)
+    {
+        while (i < u_in->nop)
+        {
+            printf("THE WATCHER");
+            if (u_in->ttd > ft_get_time() - philo[i].u_in->last_meal)
+            {
+                printf("%ld %d died\n", ft_get_time() - philo[i].u_in->birth, philo->id);
+                return 0;
+            }
+            i++;
+            usleep(50);
+        }
+        i = 0;
+    }
+}
+
 long	ft_get_time(void)
 {
 	static struct timeval	tv;
@@ -196,8 +221,28 @@ int main(int argc, char *argv[])
         return (0);
     if (!ft_forks(u_in, &forks))
         return (0);
-    if(!ft_init_philos(u_in, philos))
+    if(!ft_init_philos(u_in, &philos))
         return (0);
-    //destroy mutexes and free resources
+    // if (!ft_nights_watch(u_in, philos))
+    // {
+    //     exit(EXIT_SUCCESS);
+    // }
+
+    // int i;
+    // i = 0;
+    // while (1)
+    // {
+    //     printf("THE WATCHER");
+    //     while (i < u_in->nop)
+    //     {
+    //         if (u_in->ttd > ft_get_time() - philos[i].u_in->last_meal)
+    //         {
+    //             printf("%ld %d died\n", ft_get_time() - philos[i].u_in->birth, philos->id);
+    //             return 0;
+    //         }
+    //         i++;            
+    //     }
+    //     i = 0;
+    // }
     return (0);
 }
