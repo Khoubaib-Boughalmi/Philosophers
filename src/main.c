@@ -6,7 +6,7 @@
 /*   By: kboughal <kboughal@student.1337.ma >       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/14 16:30:12 by kboughal          #+#    #+#             */
-/*   Updated: 2023/01/20 20:41:33 by kboughal         ###   ########.fr       */
+/*   Updated: 2023/01/20 21:49:05 by kboughal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,9 @@ void    *philosopher(void *arg)
     t_philosopher *philo;
 
     philo = ((t_philosopher *)arg);
+    pthread_mutex_lock(&(philo->u_in->lock));
+    philo->last_meal = ft_get_time();
+    pthread_mutex_unlock(&(philo->u_in->lock));
     while (1)
     {    
         pthread_mutex_lock(&(philo->u_in->forks[philo->right]));
@@ -188,22 +191,24 @@ int main(int argc, char *argv[])
     if(!ft_init_philos(u_in, &philos))
         return (0);
     
+    while (i < u_in->nop)
+    {
+        philos[i].last_meal = ft_get_time();
+        i++;
+    }
     while (1)
     {
+        i = 0;
         while (i < u_in->nop)
         {
             // usleep(1000);
             if (ft_get_time() - philos[i].last_meal >= u_in->ttd)
             {
-                // pthread_mutex_lock(&philos[i].u_in->lock);
                 printf("%ld %d died\n", ft_get_time() - philos[i].birth, philos[i].id);
-                // pthread_mutex_unlock(&philos[i].u_in->lock);
                 exit(0);
             }
-            printf("philo %d HAD %d MALES\n", philos[i].id, philos[i].pmeals);
             i++;            
         }
-        i = 0;
     }
     i = -1;
     while (i++ < u_in->nop)
