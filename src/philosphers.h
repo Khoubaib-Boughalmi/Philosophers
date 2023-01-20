@@ -6,7 +6,7 @@
 /*   By: kboughal <kboughal@student.1337.ma >       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/14 16:10:37 by kboughal          #+#    #+#             */
-/*   Updated: 2023/01/19 20:08:30 by kboughal         ###   ########.fr       */
+/*   Updated: 2023/01/20 20:32:58 by kboughal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,11 +24,8 @@ typedef struct s_in
     int             tte; 
     int             tts;
     int             tmeals;
-    int             pmeals;
     pthread_mutex_t *forks;
     pthread_mutex_t lock;
-    long        birth;
-    long        last_meal;
 
 } t_in;
 
@@ -39,6 +36,10 @@ typedef struct s_philosopher
     int             right;
     t_in            *u_in;
     pthread_t       philo_thr;
+    int             pmeals;
+    long            birth;
+    long            last_meal;
+
 }   t_philosopher;
 
 void        ft_bzero(void *s, size_t n);

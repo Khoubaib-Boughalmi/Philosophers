@@ -6,7 +6,7 @@
 /*   By: kboughal <kboughal@student.1337.ma >       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/14 16:30:12 by kboughal          #+#    #+#             */
-/*   Updated: 2023/01/20 15:20:38 by kboughal         ###   ########.fr       */
+/*   Updated: 2023/01/20 20:41:33 by kboughal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,19 +20,20 @@ void    *philosopher(void *arg)
     while (1)
     {    
         pthread_mutex_lock(&(philo->u_in->forks[philo->right]));
-        printf("%ld %d has taken a fork\n", ft_get_time() - philo->u_in->birth, philo->id);
+        printf("%ld %d has taken a fork\n", ft_get_time() - philo->birth, philo->id);
         pthread_mutex_lock(&(philo->u_in->forks[philo->left]));
-        printf("%ld %d has taken a fork\n", ft_get_time() - philo->u_in->birth, philo->id);
+        printf("%ld %d has taken a fork\n", ft_get_time() - philo->birth, philo->id);
         pthread_mutex_lock(&(philo->u_in->lock));
-        philo->u_in->last_meal = ft_get_time();
+        philo->last_meal = ft_get_time();
+        philo->pmeals += 1;
         pthread_mutex_unlock(&(philo->u_in->lock));
-        printf("%ld %d is eating\n", ft_get_time() - philo->u_in->birth, philo->id);
+        printf("%ld %d is eating\n", ft_get_time() - philo->birth, philo->id);
         ft_philo_pause(philo, 'e');
         pthread_mutex_unlock(&(philo->u_in->forks[philo->right]));
         pthread_mutex_unlock(&(philo->u_in->forks[philo->left]));
-        printf("%ld %d is sleeping\n", ft_get_time() - philo->u_in->birth, philo->id);
+        printf("%ld %d is sleeping\n", ft_get_time() - philo->birth, philo->id);
         ft_philo_pause(philo, 's');
-        printf("%ld %d is thinking\n", ft_get_time() - philo->u_in->birth, philo->id);
+        printf("%ld %d is thinking\n", ft_get_time() - philo->birth, philo->id);
     }
 }
 
@@ -63,6 +64,7 @@ int ft_init_philos(t_in *u_in, t_philosopher **philo)
     {
         (*philo)[i].id = i;
         (*philo)[i].left= i;
+        (*philo)[i].pmeals = 0;
         (*philo)[i].right = (i + 1) % u_in->nop;
         (*philo)[i].u_in= u_in;
         i++;
@@ -75,18 +77,10 @@ int create_philos(t_in *u_in, t_philosopher *philo)
 {
     int res;
     
-    // create_philos_odd(u_in, philo);
-    // usleep(100);
     create_philos_even(u_in, philo);
-    int i = 0;
-    while (i < u_in->nop)
-    {
-        // pthread_join(philo[i].philo_thr, NULL);
-        pthread_detach(philo[i].philo_thr);
-        if(res)
-            return (0);
-        i++;
-    }
+    usleep(100);
+    create_philos_odd(u_in, philo);
+    
     return (1);
 }
 
@@ -100,14 +94,9 @@ int create_philos_even(t_in *u_in, t_philosopher *philo)
     {
         if (i % 2 == 0)
         {
-            philo[i].u_in->birth = ft_get_time();
+            philo[i].birth = ft_get_time();
             if (pthread_create(&philo[i].philo_thr, NULL, philosopher, philo + i) != 0)
 			    return (0);
-            // pthread_join(philo[i].philo_thr, NULL);
-		    // if (pthread_detach(philo[i].philo_thr) != 0)
-			//     return (0);
-            // pthread_join(philo[i].philo_thr, NULL);
-            // pthread_detach(philo[i].philo_thr);
         }
         i++;
     }
@@ -125,14 +114,9 @@ int create_philos_odd(t_in *u_in, t_philosopher *philo)
     {
         if (i % 2 != 0)
         {
-            philo[i].u_in->birth = ft_get_time();
+            philo[i].birth = ft_get_time();
             if (pthread_create(&philo[i].philo_thr, NULL, philosopher, philo + i) != 0)
 			    return (0);
-            // pthread_join(philo[i].philo_thr, NULL);
-		    // if (pthread_detach(philo[i].philo_thr) != 0)
-			//     return (0);
-            // pthread_join(philo[i].philo_thr, NULL);
-            // pthread_detach(philo[i].philo_thr);
         }        
         i++;
     }
@@ -181,29 +165,7 @@ int check_args(int argc, char *argv[], t_in **u_in)
     return (1);
 }
 
-int ft_nights_watch(t_in *u_in, t_philosopher *philo)
-{
-    int i;
-
-    i = 0;
-    while (1)
-    {
-        while (i < u_in->nop)
-        {
-            printf("THE WATCHER");
-            if (u_in->ttd > ft_get_time() - philo[i].u_in->last_meal)
-            {
-                printf("%ld %d died\n", ft_get_time() - philo[i].u_in->birth, philo->id);
-                return 0;
-            }
-            i++;
-            usleep(50);
-        }
-        i = 0;
-    }
-}
-
-long	ft_get_time(void)
+long    ft_get_time(void)
 {
 	static struct timeval	tv;
 
@@ -213,36 +175,38 @@ long	ft_get_time(void)
 
 int main(int argc, char *argv[])
 {
+    int             i;
     t_in            *u_in;
     t_philosopher   *philos;
     pthread_mutex_t *forks;
 
+    i = 0;
     if(!check_args(argc, argv, &u_in))
         return (0);
     if (!ft_forks(u_in, &forks))
         return (0);
     if(!ft_init_philos(u_in, &philos))
         return (0);
-    // if (!ft_nights_watch(u_in, philos))
-    // {
-    //     exit(EXIT_SUCCESS);
-    // }
-
-    // int i;
-    // i = 0;
-    // while (1)
-    // {
-    //     printf("THE WATCHER");
-    //     while (i < u_in->nop)
-    //     {
-    //         if (u_in->ttd > ft_get_time() - philos[i].u_in->last_meal)
-    //         {
-    //             printf("%ld %d died\n", ft_get_time() - philos[i].u_in->birth, philos->id);
-    //             return 0;
-    //         }
-    //         i++;            
-    //     }
-    //     i = 0;
-    // }
+    
+    while (1)
+    {
+        while (i < u_in->nop)
+        {
+            // usleep(1000);
+            if (ft_get_time() - philos[i].last_meal >= u_in->ttd)
+            {
+                // pthread_mutex_lock(&philos[i].u_in->lock);
+                printf("%ld %d died\n", ft_get_time() - philos[i].birth, philos[i].id);
+                // pthread_mutex_unlock(&philos[i].u_in->lock);
+                exit(0);
+            }
+            printf("philo %d HAD %d MALES\n", philos[i].id, philos[i].pmeals);
+            i++;            
+        }
+        i = 0;
+    }
+    i = -1;
+    while (i++ < u_in->nop)
+        pthread_join(philos[i].philo_thr, NULL);
     return (0);
 }
