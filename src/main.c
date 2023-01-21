@@ -6,7 +6,7 @@
 /*   By: kboughal <kboughal@student.1337.ma >       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/14 16:30:12 by kboughal          #+#    #+#             */
-/*   Updated: 2023/01/21 15:03:46 by kboughal         ###   ########.fr       */
+/*   Updated: 2023/01/21 15:24:45 by kboughal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,12 +26,15 @@ void    *philosopher(void *arg)
         printf("%ld %d has taken a fork\n", ft_get_time() - philo->birth, philo->id);
         pthread_mutex_lock(&(philo->u_in->forks[philo->left]));
         printf("%ld %d has taken a fork\n", ft_get_time() - philo->birth, philo->id);
-        // pthread_mutex_lock(&(philo->u_in->lock));
+        pthread_mutex_lock(&(philo->u_in->lock));
         philo->last_meal = ft_get_time();
         philo->pmeals += 1;
-        // pthread_mutex_unlock(&(philo->u_in->lock));
+        pthread_mutex_unlock(&(philo->u_in->lock));
         printf("%ld %d is eating\n", ft_get_time() - philo->birth, philo->id);
         ft_philo_pause(philo, 'e');
+        pthread_mutex_lock(&(philo->u_in->lock));
+        philo->pmeals += 1;
+        pthread_mutex_unlock(&(philo->u_in->lock));
         pthread_mutex_unlock(&(philo->u_in->forks[philo->right]));
         pthread_mutex_unlock(&(philo->u_in->forks[philo->left]));
         pthread_mutex_lock(&(philo->u_in->lock));
@@ -47,7 +50,6 @@ void ft_philo_pause(t_philosopher *philo, char c)
     long curr;
 
     curr = ft_get_time();
-
     if (c == 'e')
         while (ft_get_time() - curr < philo->u_in->tte)
             usleep(1);
@@ -205,7 +207,6 @@ int main(int argc, char *argv[])
         i = 0;
         while (i < u_in->nop)
         {
-            usleep(100);
             if (ft_get_time() - philos[i].last_meal > u_in->ttd)
             {
                 pthread_mutex_lock(&(philos[i].u_in->lock));
@@ -215,6 +216,7 @@ int main(int argc, char *argv[])
             }
             if (philos[i].pmeals == u_in->tmeals)
                 exit(0);
+            usleep(100);
             i++;            
         }
     }
