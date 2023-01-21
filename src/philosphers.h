@@ -25,8 +25,8 @@ typedef struct s_in
     int             tts;
     int             tmeals;
     pthread_mutex_t *forks;
-    pthread_mutex_t lock;
-
+    pthread_mutex_t c_lock;
+    pthread_mutex_t p_lock;
 } t_in;
 
 typedef struct s_philosopher
@@ -50,3 +50,4 @@ int         create_philos_odd(t_in *u_in, t_philosopher *philo, unsigned long bi
 int         create_philos(t_in *u_in, t_philosopher *philo);
 long        ft_get_time(void);
 void        ft_philo_pause(t_philosopher *philo, char c);
+void        my_print(char *str, t_philosopher *philo);
