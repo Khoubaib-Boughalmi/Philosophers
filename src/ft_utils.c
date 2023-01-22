@@ -6,11 +6,11 @@
 /*   By: kboughal <kboughal@student.1337.ma >       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/14 16:24:49 by kboughal          #+#    #+#             */
-/*   Updated: 2023/01/14 16:36:04 by kboughal         ###   ########.fr       */
+/*   Updated: 2023/01/22 21:54:28 by kboughal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "philosphers.h"
+#include "philosophers.h"
 
 void	ft_bzero(void *s, size_t n)
 {
