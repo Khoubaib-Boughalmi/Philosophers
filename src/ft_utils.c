@@ -6,24 +6,24 @@
 /*   By: kboughal <kboughal@student.1337.ma >       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/14 16:24:49 by kboughal          #+#    #+#             */
-/*   Updated: 2023/01/22 21:54:28 by kboughal         ###   ########.fr       */
+/*   Updated: 2023/01/24 20:02:44 by kboughal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "philosophers.h"
+#include "philosphers.h"
 
 void	ft_bzero(void *s, size_t n)
 {
-    size_t  i;
+	size_t	i;
 
-    i = 0;
-    if (!n)
+	if (!n)
 		return ;
-    while (i < n)
-    {
-        ((unsigned char *)s)[i] = '\0';
-        i++;
-    }
+	i = 0;
+	while (i < n)
+	{
+		((unsigned char *)s)[i] = '\0';
+		i++;
+	}
 }
 
 int	ft_atoi(const char *ptr)
@@ -32,14 +32,14 @@ int	ft_atoi(const char *ptr)
 	long int		res;
 	short			sign;
 
-  sign = 1;
+	sign = 1;
 	res = 0;
 	i = 0;
-  if (ptr[0] == '-')
-  {
-    sign = -1;
-    i++;
-  }
+	if (ptr[0] == '-')
+	{
+		sign = -1;
+		i++;
+	}
 	while ((ptr[i] >= '0' && ptr[i] <= '9') && ptr[i] != '\0')
 	{
 		res = res * 10;
