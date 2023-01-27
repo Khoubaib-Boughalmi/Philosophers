@@ -6,7 +6,7 @@
 /*   By: kboughal <kboughal@student.1337.ma >       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/14 16:30:12 by kboughal          #+#    #+#             */
-/*   Updated: 2023/01/27 17:49:13 by kboughal         ###   ########.fr       */
+/*   Updated: 2023/01/27 21:56:51 by kboughal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,7 +87,6 @@ int	ft_init_philos(t_in *u_in, t_philosopher **philo)
 		(*philo)[i].lock = 1;
 		i++;
 	}
-	create_philos(u_in, *philo);
 	return (1);
 }
 
@@ -242,7 +241,9 @@ int	main(int argc, char *argv[])
 		return (0);
 	if (!ft_forks(u_in, &forks))
 		return (0);
-	ft_init_philos(u_in, &philos);
+	if (!ft_init_philos(u_in, &philos))
+		return (0);
+	create_philos(u_in, philos);
 	if(!ft_monitor(u_in, philos))
 	{
 		i = -1;
