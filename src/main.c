@@ -6,7 +6,7 @@
 /*   By: kboughal <kboughal@student.1337.ma >       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/14 16:30:12 by kboughal          #+#    #+#             */
-/*   Updated: 2023/01/24 20:35:01 by kboughal         ###   ########.fr       */
+/*   Updated: 2023/01/27 17:49:13 by kboughal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,16 +25,16 @@ void	*philosopher(void *arg)
 		exit(0);
 	}
 	while (1)
-	{
+	{	
 		pthread_mutex_lock(&(philo->u_in->forks[philo->right]));
 		my_print("has taken a fork", philo);
 		pthread_mutex_lock(&(philo->u_in->forks[philo->left]));
 		my_print("has taken a fork", philo);
+		my_print("is eating", philo);
 		pthread_mutex_lock(&(philo->u_in->c_lock));
 		philo->last_meal = ft_get_time();
 		philo->pmeals += 1;
 		pthread_mutex_unlock(&(philo->u_in->c_lock));
-		my_print("is eating", philo);
 		ft_philo_pause(philo, 'e');
 		pthread_mutex_unlock(&(philo->u_in->forks[philo->right]));
 		pthread_mutex_unlock(&(philo->u_in->forks[philo->left]));
@@ -56,7 +56,6 @@ void	ft_philo_pause(t_philosopher *philo, char c)
 	long	curr;
 
 	curr = ft_get_time();
-	usleep(900);
 	if (c == 'e')
 		while (ft_get_time() - curr < philo->u_in->tte)
 			usleep(100);
@@ -95,16 +94,16 @@ int	ft_init_philos(t_in *u_in, t_philosopher **philo)
 int	create_philos(t_in *u_in, t_philosopher *philo)
 {
 	int				res;
-	unsigned long	birth;
 
-	birth = ft_get_time();
-	create_philos_even(u_in, philo, birth);
+	create_philos_even(u_in, philo);
 	usleep(50);
-	create_philos_odd(u_in, philo, birth);
+	create_philos_odd(u_in, philo);
+	
+
 	return (1);
 }
 
-int	create_philos_even(t_in *u_in, t_philosopher *philo, unsigned long birth)
+int	create_philos_even(t_in *u_in, t_philosopher *philo)
 {
 	int	i;
 	int	res;
@@ -124,7 +123,7 @@ int	create_philos_even(t_in *u_in, t_philosopher *philo, unsigned long birth)
 	return (1);
 }
 
-int	create_philos_odd(t_in *u_in, t_philosopher *philo, unsigned long birth)
+int	create_philos_odd(t_in *u_in, t_philosopher *philo)
 {
 	int	i;
 	int	res;
@@ -196,23 +195,13 @@ long	ft_get_time(void)
 	return ((tv.tv_sec * 1000) + (tv.tv_usec / 1000));
 }
 
-int	main(int argc, char *argv[])
+int ft_monitor(t_in *u_in, t_philosopher *philos)
 {
-	int				i;
-	t_in			*u_in;
-	t_philosopher	*philos;
-	pthread_mutex_t	*forks;
-	long			timer;
-	int				total;
+	int		i;
+	long	timer;
+	int		total;
 
-	i = 0;
 	total = 0;
-	if (!check_args(argc, argv, &u_in))
-		return (0);
-	if (!ft_forks(u_in, &forks))
-		return (0);
-	if (!ft_init_philos(u_in, &philos))
-		return (0);
 	while (1)
 	{
 		i = 0;
@@ -224,21 +213,49 @@ int	main(int argc, char *argv[])
 			if (timer >= u_in->ttd && philos[i].last_meal != -1)
 			{
 				my_print("is dead", &philos[i]);
-				exit(0);
+				return(0);
 			}
 			if (philos[i].pmeals == u_in->tmeals && philos[i].lock && u_in->tmeals != -1)
 			{
 				total++;
 				philos[i].lock = 0;
 				if (total == u_in->nop)
-					exit (0);
+					return (0);
 			}
-			usleep(100);
+			usleep(10);
 			i++;
 		}
 	}
-	i = -1;
-	while (i++ < u_in->nop)
-		pthread_join(philos[i].philo_thr, NULL);
+}
+
+int	main(int argc, char *argv[])
+{
+	int				i;
+	t_in			*u_in;
+	t_philosopher	*philos;
+	pthread_mutex_t	*forks;
+	long			timer;
+	int				total;
+
+	total = 0;
+	if (!check_args(argc, argv, &u_in))
+		return (0);
+	if (!ft_forks(u_in, &forks))
+		return (0);
+	ft_init_philos(u_in, &philos);
+	if(!ft_monitor(u_in, philos))
+	{
+		i = -1;
+		while (i++ < u_in->nop)
+		{	
+			if(pthread_detach(philos[i].philo_thr))
+				return (1);
+			if(pthread_mutex_destroy(&forks[i]))
+				return (1);
+			free(forks);
+			free(philos);
+			free(u_in);
+		}
+	}
 	return (0);
 }
