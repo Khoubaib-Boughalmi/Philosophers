@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   philosphers.h                                      :+:      :+:    :+:   */
+/*   philosophers.h                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: kboughal <kboughal@student.1337.ma >       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/14 16:10:37 by kboughal          #+#    #+#             */
-/*   Updated: 2023/01/27 17:47:26 by kboughal         ###   ########.fr       */
+/*   Updated: 2023/01/29 17:37:30 by kboughal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@
 # include <unistd.h>
 # include <sys/time.h>
 # include <pthread.h>
+#include <semaphore.h>
 
 typedef struct s_in
 {
@@ -34,9 +35,7 @@ typedef struct s_in
 
 typedef struct s_philosopher
 {
-	int				id;
-	int				left;
-	int				right;
+	pid_t			id;
 	int				pmeals;
 	int				lock;
 	long			last_meal;
@@ -54,5 +53,8 @@ int		create_philos(t_in *u_in, t_philosopher *philo);
 long	ft_get_time(void);
 void	ft_philo_pause(t_philosopher *philo, char c);
 void	my_print(char *str, t_philosopher *philo);
-
+int		parse_args(int argc, char *argv[], t_in **u_in);
+int		ft_init_forks(t_in *u_in, sem_t *forks);
+int		ft_init(t_in *u_in, sem_t *forks, t_philosopher **philos);
+int		ft_init_philos(t_in *u_in, t_philosopher **philo);
 #	endif
