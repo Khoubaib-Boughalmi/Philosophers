@@ -6,24 +6,24 @@
 /*   By: kboughal <kboughal@student.1337.ma >       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/14 16:30:12 by kboughal          #+#    #+#             */
-/*   Updated: 2023/01/28 16:16:17 by kboughal         ###   ########.fr       */
+/*   Updated: 2023/01/29 17:12:49 by kboughal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "philosphers.h"
+#include "philosophers.h"
 
 void	*philosopher(void *arg)
 {
 	t_philosopher	*philo;
 
 	philo = ((t_philosopher *)arg);
-	if (philo->u_in->nop == 1)
-	{
-		my_print("has taken a fork", philo);
-		ft_philo_pause(philo, 'd');
-		my_print("is dead", philo);
-		exit(0);
-	}
+	// if (philo->u_in->nop == 1)
+	// {
+	// 	my_print("has taken a fork", philo);
+	// 	ft_philo_pause(philo, 'd');
+	// 	my_print("is dead", philo);
+	// 	exit(0);
+	// }
 	while (1)
 	{	
 		pthread_mutex_lock(&(philo->u_in->forks[philo->right]));
@@ -31,15 +31,17 @@ void	*philosopher(void *arg)
 		pthread_mutex_lock(&(philo->u_in->forks[philo->left]));
 		my_print("has taken a fork", philo);
 		my_print("is eating", philo);
+		ft_philo_pause(philo, 'e');
 		pthread_mutex_lock(&(philo->u_in->c_lock));
 		philo->last_meal = ft_get_time();
 		philo->pmeals += 1;
 		pthread_mutex_unlock(&(philo->u_in->c_lock));
-		ft_philo_pause(philo, 'e');
+		// usleep(1000 * philo->u_in->tte);
 		pthread_mutex_unlock(&(philo->u_in->forks[philo->right]));
 		pthread_mutex_unlock(&(philo->u_in->forks[philo->left]));
 		my_print("is sleeping", philo);
 		ft_philo_pause(philo, 's');
+		// usleep(1000 * philo->u_in->tts);
 		my_print("is thinking", philo);
 	}
 }
@@ -92,13 +94,9 @@ int	ft_init_philos(t_in *u_in, t_philosopher **philo)
 
 int	create_philos(t_in *u_in, t_philosopher *philo)
 {
-	int				res;
-
 	create_philos_even(u_in, philo);
-	usleep(100);
+	usleep(50);
 	create_philos_odd(u_in, philo);
-	
-
 	return (1);
 }
 
@@ -142,58 +140,6 @@ int	create_philos_odd(t_in *u_in, t_philosopher *philo)
 	return (1);
 }
 
-int	ft_forks(t_in *u_in, pthread_mutex_t **forks)
-{
-	int	i;
-
-	i = -1;
-	*forks = (pthread_mutex_t *)malloc(u_in->nop * sizeof(pthread_mutex_t));
-	if (!forks)
-		return (0);
-	while (++i < u_in->nop)
-		if (pthread_mutex_init(&(*forks)[i], NULL))
-			return (0);
-	u_in->forks = *forks;
-	return (1);
-}
-
-int	check_args(int argc, char *argv[], t_in **u_in)
-{
-	int	i;
-
-	if (argc < 5 || argc > 6)
-		return (0);
-	i = 2;
-	*u_in = (t_in *)malloc(sizeof(t_in));
-	if (ft_atoi(argv[1]) <= 0)
-		return (0);
-	while (i < argc)
-	{
-		if (ft_atoi(argv[i]) < 0)
-			return (0);
-		i++;
-	}
-	(*u_in)->nop = ft_atoi(argv[1]);
-	(*u_in)->ttd = ft_atoi(argv[2]);
-	(*u_in)->tte = ft_atoi(argv[3]);
-	(*u_in)->tts = ft_atoi(argv[4]);
-	if (argc == 6)
-		(*u_in)->tmeals = ft_atoi(argv[5]);
-	else
-		(*u_in)->tmeals = -1;
-	pthread_mutex_init(&(*u_in)->c_lock, NULL);
-	pthread_mutex_init(&(*u_in)->p_lock, NULL);
-	return (1);
-}
-
-long	ft_get_time(void)
-{
-	static struct timeval	tv;
-
-	gettimeofday(&tv, NULL);
-	return ((tv.tv_sec * 1000) + (tv.tv_usec / 1000));
-}
-
 int ft_monitor(t_in *u_in, t_philosopher *philos)
 {
 	int		i;
@@ -204,6 +150,7 @@ int ft_monitor(t_in *u_in, t_philosopher *philos)
 	while (1)
 	{
 		i = 0;
+		usleep(10);
 		while (i < u_in->nop)
 		{
 			pthread_mutex_lock(&(philos[i].u_in->c_lock));
@@ -211,7 +158,7 @@ int ft_monitor(t_in *u_in, t_philosopher *philos)
 			pthread_mutex_unlock(&(philos[i].u_in->c_lock));
 			if (timer >= u_in->ttd)
 			{
-				my_print("is dead", &philos[i]);
+				my_print("died", &philos[i]);
 				return(0);
 			}
 			if (philos[i].pmeals == u_in->tmeals && philos[i].lock && u_in->tmeals != -1)
@@ -221,7 +168,6 @@ int ft_monitor(t_in *u_in, t_philosopher *philos)
 				if (total == u_in->nop)
 					return (0);
 			}
-			usleep(10);
 			i++;
 		}
 	}
@@ -237,11 +183,9 @@ int	main(int argc, char *argv[])
 	int				total;
 
 	total = 0;
-	if (!check_args(argc, argv, &u_in))
+	if (!parse_args(argc, argv, &u_in))
 		return (0);
-	if (!ft_forks(u_in, &forks))
-		return (0);
-	if (!ft_init_philos(u_in, &philos))
+	if(!ft_init(u_in, &forks, &philos))
 		return (0);
 	create_philos(u_in, philos);
 	if(!ft_monitor(u_in, philos))
