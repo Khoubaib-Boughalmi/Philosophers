@@ -6,13 +6,13 @@
 /*   By: kboughal <kboughal@student.1337.ma >       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/14 16:30:12 by kboughal          #+#    #+#             */
-/*   Updated: 2023/01/29 17:46:59 by kboughal         ###   ########.fr       */
+/*   Updated: 2023/01/31 17:55:42 by kboughal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philosophers.h"
 
-void	*philosopher(t_philosopher *philo)
+void	philosopher(t_philosopher *philo)
 {
 	// if (philo->u_in->nop == 1)
 	// {
@@ -66,26 +66,6 @@ void	ft_philo_pause(t_philosopher *philo, char c)
 			usleep(100);
 }
 
-int	ft_init_philos(t_in *u_in, t_philosopher **philo)
-{
-	int	i;
-	int	res;
-
-	i = 0;
-	*philo = (t_philosopher *)malloc(u_in->nop * sizeof(t_philosopher));
-	if (!*philo)
-		return (0);
-	while (i < u_in->nop)
-	{
-		(*philo)[i].pmeals = 0;
-		(*philo)[i].u_in = u_in;
-		(*philo)[i].last_meal = ft_get_time();
-		(*philo)[i].lock = 1;
-		i++;
-	}
-	return (1);
-}
-
 int	create_philos(t_in *u_in, t_philosopher *philo)
 {
 	int	i;
@@ -111,20 +91,16 @@ int	create_philos(t_in *u_in, t_philosopher *philo)
 int ft_monitor(t_in *u_in, t_philosopher *philos)
 {
 	int		i;
-	long	timer;
 	int		total;
 
-	total = 0;
 	while (1)
 	{
 		i = 0;
 		usleep(10);
 		while (i < u_in->nop)
 		{
-			pthread_mutex_lock(&(philos[i].u_in->c_lock));
-			timer = ft_get_time() - philos[i].last_meal;
-			pthread_mutex_unlock(&(philos[i].u_in->c_lock));
-			if (timer >= u_in->ttd)
+			
+			if (ft_get_timer_diff(&philos[i]) >= u_in->ttd)
 			{
 				my_print("died", &philos[i]);
 				return(0);
@@ -170,5 +146,7 @@ int	main(int argc, char *argv[])
 	// 		free(u_in);
 	// 	}
 	// }
+	sem_close(forks);
+	sem_unlink("/forks");
 	return (0);
 }

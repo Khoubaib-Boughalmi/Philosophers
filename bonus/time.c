@@ -1,57 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_utils.c                                         :+:      :+:    :+:   */
+/*   time.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: kboughal <kboughal@student.1337.ma >       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/01/14 16:24:49 by kboughal          #+#    #+#             */
-/*   Updated: 2023/01/28 17:26:47 by kboughal         ###   ########.fr       */
+/*   Created: 2023/01/31 14:43:46 by kboughal          #+#    #+#             */
+/*   Updated: 2023/01/31 14:44:11 by kboughal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philosophers.h"
-
-void	ft_bzero(void *s, size_t n)
-{
-	size_t	i;
-
-	if (!n)
-		return ;
-	i = 0;
-	while (i < n)
-	{
-		((unsigned char *)s)[i] = '\0';
-		i++;
-	}
-}
-
-int	ft_atoi(const char *ptr)
-{
-	unsigned long	i;
-	long int		res;
-	short			sign;
-
-	sign = 1;
-	res = 0;
-	i = 0;
-	if (ptr[0] == '-')
-	{
-		sign = -1;
-		i++;
-	}
-	while ((ptr[i] >= '0' && ptr[i] <= '9') && ptr[i] != '\0')
-	{
-		res = res * 10;
-		res += ptr[i] - '0';
-		if (res * sign > 21474483647)
-			return (0);
-		if (res * sign < -2147483648)
-			return (0);
-		i++;
-	}
-	return (res * sign);
-}
 
 long	ft_get_time(void)
 {
@@ -59,4 +18,13 @@ long	ft_get_time(void)
 
 	gettimeofday(&tv, NULL);
 	return ((tv.tv_sec * 1000) + (tv.tv_usec / 1000));
+}
+
+int	ft_get_timer_diff(t_philosopher *philos)
+{
+	int	timer;
+	pthread_mutex_lock(&(philos->u_in->c_lock));
+	timer = ft_get_time() - philos->last_meal;
+	pthread_mutex_unlock(&(philos->u_in->c_lock));
+	return (timer);
 }
