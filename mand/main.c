@@ -6,7 +6,7 @@
 /*   By: kboughal <kboughal@student.1337.ma >       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/14 16:30:12 by kboughal          #+#    #+#             */
-/*   Updated: 2023/01/29 17:12:49 by kboughal         ###   ########.fr       */
+/*   Updated: 2023/02/03 16:54:31 by kboughal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,13 +17,6 @@ void	*philosopher(void *arg)
 	t_philosopher	*philo;
 
 	philo = ((t_philosopher *)arg);
-	// if (philo->u_in->nop == 1)
-	// {
-	// 	my_print("has taken a fork", philo);
-	// 	ft_philo_pause(philo, 'd');
-	// 	my_print("is dead", philo);
-	// 	exit(0);
-	// }
 	while (1)
 	{	
 		pthread_mutex_lock(&(philo->u_in->forks[philo->right]));
@@ -31,17 +24,17 @@ void	*philosopher(void *arg)
 		pthread_mutex_lock(&(philo->u_in->forks[philo->left]));
 		my_print("has taken a fork", philo);
 		my_print("is eating", philo);
-		ft_philo_pause(philo, 'e');
 		pthread_mutex_lock(&(philo->u_in->c_lock));
 		philo->last_meal = ft_get_time();
-		philo->pmeals += 1;
 		pthread_mutex_unlock(&(philo->u_in->c_lock));
-		// usleep(1000 * philo->u_in->tte);
+		ft_philo_pause(philo, 'e');
+		pthread_mutex_lock(&(philo->u_in->m_lock));
+		philo->pmeals += 1;
+		pthread_mutex_unlock(&(philo->u_in->m_lock));
 		pthread_mutex_unlock(&(philo->u_in->forks[philo->right]));
 		pthread_mutex_unlock(&(philo->u_in->forks[philo->left]));
 		my_print("is sleeping", philo);
 		ft_philo_pause(philo, 's');
-		// usleep(1000 * philo->u_in->tts);
 		my_print("is thinking", philo);
 	}
 }
@@ -150,13 +143,10 @@ int ft_monitor(t_in *u_in, t_philosopher *philos)
 	while (1)
 	{
 		i = 0;
-		usleep(10);
+		usleep(600);
 		while (i < u_in->nop)
 		{
-			pthread_mutex_lock(&(philos[i].u_in->c_lock));
-			timer = ft_get_time() - philos[i].last_meal;
-			pthread_mutex_unlock(&(philos[i].u_in->c_lock));
-			if (timer >= u_in->ttd)
+			if (ft_get_timer_diff(&philos[i]) >= u_in->ttd)
 			{
 				my_print("died", &philos[i]);
 				return(0);

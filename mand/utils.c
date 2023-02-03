@@ -6,7 +6,7 @@
 /*   By: kboughal <kboughal@student.1337.ma >       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/14 16:24:49 by kboughal          #+#    #+#             */
-/*   Updated: 2023/01/28 17:26:47 by kboughal         ###   ########.fr       */
+/*   Updated: 2023/02/03 15:48:37 by kboughal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,12 +51,4 @@ int	ft_atoi(const char *ptr)
 		i++;
 	}
 	return (res * sign);
-}
-
-long	ft_get_time(void)
-{
-	static struct timeval	tv;
-
-	gettimeofday(&tv, NULL);
-	return ((tv.tv_sec * 1000) + (tv.tv_usec / 1000));
 }

@@ -6,7 +6,7 @@
 /*   By: kboughal <kboughal@student.1337.ma >       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/14 16:10:37 by kboughal          #+#    #+#             */
-/*   Updated: 2023/01/28 17:45:42 by kboughal         ###   ########.fr       */
+/*   Updated: 2023/02/03 15:54:55 by kboughal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,7 @@ typedef struct s_in
 	pthread_mutex_t	*forks;
 	pthread_mutex_t	c_lock;
 	pthread_mutex_t	p_lock;
+	pthread_mutex_t	m_lock;
 }	t_in;
 
 typedef struct s_philosopher
@@ -59,4 +60,6 @@ long	ft_get_time(void);
 int		ft_init_forks(t_in *u_in, pthread_mutex_t **forks);
 int		ft_init(t_in *u_in, pthread_mutex_t **forks, t_philosopher **philos);
 int		ft_init_philos(t_in *u_in, t_philosopher **philo);
+int		ft_get_timer_diff(t_philosopher *philos);
+int ft_init_mutexes(t_in *u_in);
 #	endif
