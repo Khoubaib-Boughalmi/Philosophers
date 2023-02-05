@@ -52,3 +52,15 @@ int	ft_atoi(const char *ptr)
 	}
 	return (res * sign);
 }
+
+void clean_semaphores(t_sem_define *sem_collection)
+{
+	sem_close(sem_collection->forks);
+	sem_unlink("/forks");
+	sem_close(sem_collection->death);
+	sem_unlink("/death");
+	sem_close(sem_collection->food);
+	sem_unlink("/food");
+	sem_close(sem_collection->print);
+	sem_unlink("/print");
+}

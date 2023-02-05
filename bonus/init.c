@@ -12,22 +12,31 @@
 
 #include "philosophers.h"
 
-int	ft_init_sems(t_in *u_in, sem_t *forks, sem_t *death)
+int	ft_init_sems(t_in *u_in, t_sem_define *sem_collection)
 {
-	sem_close(forks);
-	sem_unlink("/forks");
-	sem_close(death);
-	sem_unlink("/death");
-	forks = sem_open("/forks", O_CREAT, 0644, u_in->nop);
-    if (forks == SEM_FAILED) {
+	clean_semaphores(sem_collection);
+	sem_collection->forks = sem_open("/forks", O_CREAT, 0644, u_in->nop);
+    if (sem_collection->forks == SEM_FAILED) {
         return (0);
     }
-	death = sem_open("/death", O_CREAT, 0644, u_in->nop);
-    if (death == SEM_FAILED) {
+	sem_collection->death = sem_open("/death", O_CREAT, 0644, u_in->nop);
+    if (sem_collection->death == SEM_FAILED) {
         return (0);
     }
-	u_in->forks = forks;
-	u_in->death = death;
+	sem_collection->print = sem_open("/print", O_CREAT, 0644, 1);
+    if (sem_collection->print == SEM_FAILED) {
+        return (0);
+    }
+	if (u_in->tmeals != -1)
+	{
+		sem_collection->food = sem_open("/food", O_CREAT, 0644, u_in->nop * u_in->tmeals);
+		if (sem_collection->food == SEM_FAILED) {
+			return (0);
+		}
+		u_in->sem_collection.food = sem_collection->food;
+	}
+	u_in->sem_collection.forks = sem_collection->forks;
+	u_in->sem_collection.death= sem_collection->death;
 	return (1);
 }
 
@@ -52,9 +61,9 @@ int	ft_init_philos(t_in *u_in, t_philosopher **philo)
 	return (1);
 }
 
-int ft_init(t_philosopher **philos, t_in *u_in, sem_t *forks, sem_t *death)
+int ft_init(t_philosopher **philos, t_in *u_in, t_sem_define *sem_collection)
 {
-    if (!ft_init_sems(u_in, forks, death))
+    if (!ft_init_sems(u_in, sem_collection))
 		return (0);
 	if (!ft_init_philos(u_in, philos))
 		return (0);

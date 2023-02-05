@@ -20,11 +20,11 @@ long	ft_get_time(void)
 	return ((tv.tv_sec * 1000) + (tv.tv_usec / 1000));
 }
 
-int	ft_get_timer_diff(t_philosopher *philos)
+int	ft_get_timer_diff(t_philosopher *philo)
 {
 	int	timer;
-	pthread_mutex_lock(&(philos->u_in->c_lock));
-	timer = ft_get_time() - philos->last_meal;
-	pthread_mutex_unlock(&(philos->u_in->c_lock));
+	pthread_mutex_lock(&(philo->u_in->c_lock));
+	timer = ft_get_time() - philo->last_meal;
+	pthread_mutex_unlock(&(philo->u_in->c_lock));
 	return (timer);
 }

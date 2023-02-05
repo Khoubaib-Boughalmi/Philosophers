@@ -18,8 +18,18 @@
 # include <stdlib.h>
 # include <unistd.h>
 # include <sys/time.h>
+#include <fcntl.h>
 # include <pthread.h>
 #include <semaphore.h>
+#include <signal.h>
+
+typedef struct s_sem_define
+{
+	sem_t			*forks;
+	sem_t			*death;
+	sem_t			*food;
+	sem_t			*print;
+}	t_sem_define;
 
 typedef struct s_in
 {
@@ -28,8 +38,7 @@ typedef struct s_in
 	int				tte;
 	int				tts;
 	int				tmeals;
-	sem_t			*forks;
-	sem_t			*death;
+	t_sem_define	sem_collection;
 	pthread_mutex_t	c_lock;
 	pthread_mutex_t	p_lock;
 }	t_in;
@@ -37,12 +46,13 @@ typedef struct s_in
 typedef struct s_philosopher
 {
 	pid_t			id;
+	int				r_id;
 	int				pmeals;
 	int				lock;
 	long			last_meal;
 	long			birth;
 	t_in			*u_in;
-	pthread_t		philo_thr;
+	pthread_t		monitor;
 
 }	t_philosopher;
 
@@ -55,9 +65,9 @@ long	ft_get_time(void);
 void	ft_philo_pause(t_philosopher *philo, char c);
 void	my_print(char *str, t_philosopher *philo);
 int		parse_args(int argc, char *argv[], t_in **u_in);
-int		ft_init_sems(t_in *u_in, sem_t *forks, sem_t *death);
-int		ft_init(t_philosopher **philos, t_in *u_in, sem_t *forks, sem_t *death);
+int		ft_init_sems(t_in *u_in, t_sem_define *sem_collection);
+int		ft_init(t_philosopher **philos, t_in *u_in, t_sem_define *sem_collection);
 int		ft_init_philos(t_in *u_in, t_philosopher **philo);
 int		ft_get_timer_diff(t_philosopher *philos);
-
+void	clean_semaphores(t_sem_define *sem_collection);
 #	endif
