@@ -6,7 +6,7 @@
 /*   By: kboughal <kboughal@student.1337.ma >       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/14 16:30:12 by kboughal          #+#    #+#             */
-/*   Updated: 2023/02/07 19:01:37 by kboughal         ###   ########.fr       */
+/*   Updated: 2023/02/07 19:49:28 by kboughal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,23 +54,11 @@ void	*monitor_food_fun(void *args)
 	exit(0);
 }
 
-int	main(int argc, char *argv[])
+void ft_terminate(t_in *u_in, t_philosopher *philos)
 {
-	int				i;
-	t_in			*u_in;
-	t_philosopher	*philos;
-	pthread_t		monitor_food;
+	int	i;
 
 	i = 0;
-	if (!parse_args(argc, argv, &u_in))
-		return (0);
-	clean_semaphores(&u_in->sem_collection);
-	if (!ft_init(&philos, u_in, &u_in->sem_collection))
-		return (0);
-	create_philos(u_in, philos);
-	usleep(1000);
-	if (u_in->tmeals != -1)
-		pthread_create(&monitor_food, NULL, monitor_food_fun, philos);
 	sem_wait(u_in->sem_collection.death);
 	while (i < u_in->nop)
 	{
@@ -81,5 +69,23 @@ int	main(int argc, char *argv[])
 	if (u_in->tmeals != -1)
 		sem_post(u_in->sem_collection.food);
 	clean_semaphores(&u_in->sem_collection);
+}
+
+int	main(int argc, char *argv[])
+{
+	t_in			*u_in;
+	t_philosopher	*philos;
+	pthread_t		monitor_food;
+
+	if (!parse_args(argc, argv, &u_in))
+		return (0);
+	clean_semaphores(&u_in->sem_collection);
+	if (!ft_init(&philos, u_in, &u_in->sem_collection))
+		return (0);
+	create_philos(u_in, philos);
+	usleep(1000);
+	if (u_in->tmeals != -1)
+		pthread_create(&monitor_food, NULL, monitor_food_fun, philos);
+	ft_terminate(u_in, philos);
 	return (0);
 }

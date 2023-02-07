@@ -6,7 +6,7 @@
 /*   By: kboughal <kboughal@student.1337.ma >       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/28 17:26:15 by kboughal          #+#    #+#             */
-/*   Updated: 2023/02/07 17:51:30 by kboughal         ###   ########.fr       */
+/*   Updated: 2023/02/07 19:41:36 by kboughal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,6 @@ int	ft_init_sems(t_in *u_in, t_sem_define *sem_collection)
 int	ft_init_philos(t_in *u_in, t_philosopher **philo)
 {
 	int	i;
-	int	res;
 
 	i = 0;
 	*philo = (t_philosopher *)malloc(u_in->nop * sizeof(t_philosopher));
