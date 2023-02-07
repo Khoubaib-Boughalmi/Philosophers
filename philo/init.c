@@ -6,11 +6,11 @@
 /*   By: kboughal <kboughal@student.1337.ma >       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/28 17:26:15 by kboughal          #+#    #+#             */
-/*   Updated: 2023/02/03 15:55:29 by kboughal         ###   ########.fr       */
+/*   Updated: 2023/02/07 19:25:05 by kboughal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "philosophers.h"
+#include "./philosophers.h"
 
 int	ft_init_forks(t_in *u_in, pthread_mutex_t **forks)
 {

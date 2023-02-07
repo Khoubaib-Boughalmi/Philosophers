@@ -6,11 +6,11 @@
 /*   By: kboughal <kboughal@student.1337.ma >       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/14 16:30:12 by kboughal          #+#    #+#             */
-/*   Updated: 2023/02/03 16:54:31 by kboughal         ###   ########.fr       */
+/*   Updated: 2023/02/07 19:25:08 by kboughal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "philosophers.h"
+#include "./philosophers.h"
 
 void	*philosopher(void *arg)
 {
@@ -65,8 +65,7 @@ void	ft_philo_pause(t_philosopher *philo, char c)
 int	ft_init_philos(t_in *u_in, t_philosopher **philo)
 {
 	int	i;
-	int	res;
-
+	
 	i = 0;
 	*philo = (t_philosopher *)malloc(u_in->nop * sizeof(t_philosopher));
 	if (!*philo)
@@ -96,7 +95,6 @@ int	create_philos(t_in *u_in, t_philosopher *philo)
 int	create_philos_even(t_in *u_in, t_philosopher *philo)
 {
 	int	i;
-	int	res;
 
 	i = 0;
 	while (i < u_in->nop)
@@ -116,7 +114,6 @@ int	create_philos_even(t_in *u_in, t_philosopher *philo)
 int	create_philos_odd(t_in *u_in, t_philosopher *philo)
 {
 	int	i;
-	int	res;
 
 	i = 0;
 	while (i < u_in->nop)
@@ -136,7 +133,6 @@ int	create_philos_odd(t_in *u_in, t_philosopher *philo)
 int ft_monitor(t_in *u_in, t_philosopher *philos)
 {
 	int		i;
-	long	timer;
 	int		total;
 
 	total = 0;
@@ -169,10 +165,7 @@ int	main(int argc, char *argv[])
 	t_in			*u_in;
 	t_philosopher	*philos;
 	pthread_mutex_t	*forks;
-	long			timer;
-	int				total;
 
-	total = 0;
 	if (!parse_args(argc, argv, &u_in))
 		return (0);
 	if(!ft_init(u_in, &forks, &philos))

@@ -6,7 +6,7 @@
 /*   By: kboughal <kboughal@student.1337.ma >       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/14 16:24:49 by kboughal          #+#    #+#             */
-/*   Updated: 2023/01/31 14:43:44 by kboughal         ###   ########.fr       */
+/*   Updated: 2023/02/07 18:14:05 by kboughal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,14 @@ int	ft_atoi(const char *ptr)
 	return (res * sign);
 }
 
-void clean_semaphores(t_sem_define *sem_collection)
+void	my_print(char *str, t_philosopher *philo)
+{
+	sem_wait(philo->u_in->sem_collection.print);
+	printf("%ld %d %s\n", ft_get_time() - philo->birth, philo->id, str);
+	sem_post(philo->u_in->sem_collection.print);
+}
+
+void	clean_semaphores(t_sem_define *sem_collection)
 {
 	sem_close(sem_collection->forks);
 	sem_unlink("/forks");

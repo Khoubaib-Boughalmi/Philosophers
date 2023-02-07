@@ -6,11 +6,11 @@
 /*   By: kboughal <kboughal@student.1337.ma >       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/28 17:23:39 by kboughal          #+#    #+#             */
-/*   Updated: 2023/01/28 17:49:59 by kboughal         ###   ########.fr       */
+/*   Updated: 2023/02/07 19:25:11 by kboughal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "philosophers.h"
+#include "./philosophers.h"
 
 int	parse_args(int argc, char *argv[], t_in **u_in)
 {
