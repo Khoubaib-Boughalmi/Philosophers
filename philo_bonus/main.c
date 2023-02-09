@@ -6,7 +6,7 @@
 /*   By: kboughal <kboughal@student.1337.ma >       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/14 16:30:12 by kboughal          #+#    #+#             */
-/*   Updated: 2023/02/08 20:06:55 by kboughal         ###   ########.fr       */
+/*   Updated: 2023/02/09 17:40:26 by kboughal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,14 +50,14 @@ void	ft_terminate(t_in *u_in, t_philosopher *philos)
 		sem_post(u_in->sem_collection.food);
 	clean_semaphores(&u_in->sem_collection);
 	free(u_in);
-	free(philos)
+	free(philos);
 }
 
 int	main(int argc, char *argv[])
 {
 	t_in			*u_in;
 	t_philosopher	*philos;
-	pthread_t		monitor_food;
+	pthread_t		monitor_food_id;
 
 	if (!parse_args(argc, argv, &u_in))
 		return (0);
@@ -67,7 +67,7 @@ int	main(int argc, char *argv[])
 	create_philos(u_in, philos);
 	usleep(1000);
 	if (u_in->tmeals != -1)
-		pthread_create(&monitor_food, NULL, monitor_food_fun, philos);
+		pthread_create(&monitor_food_id, NULL, monitor_food, philos);
 	ft_terminate(u_in, philos);
 	return (0);
 }

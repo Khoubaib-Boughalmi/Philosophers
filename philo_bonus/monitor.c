@@ -6,7 +6,7 @@
 /*   By: kboughal <kboughal@student.1337.ma >       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/07 18:15:42 by kboughal          #+#    #+#             */
-/*   Updated: 2023/02/08 19:38:53 by kboughal         ###   ########.fr       */
+/*   Updated: 2023/02/09 18:11:13 by kboughal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ void	*monitor_death(void *arg)
 	philo = ((t_philosopher *)arg);
 	while (1)
 	{
-		usleep(10);
+		usleep(500);
 		if (ft_get_timer_diff(philo) >= philo->u_in->ttd)
 		{
 			sem_post(philo->u_in->sem_collection.death);
@@ -28,7 +28,7 @@ void	*monitor_death(void *arg)
 	}	
 }
 
-void	*monitor_food_fun(void *args)
+void	*monitor_food(void *args)
 {
 	t_philosopher	*philos;
 	t_in			*common;

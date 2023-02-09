@@ -6,7 +6,7 @@
 /*   By: kboughal <kboughal@student.1337.ma >       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/14 16:10:37 by kboughal          #+#    #+#             */
-/*   Updated: 2023/02/08 19:30:21 by kboughal         ###   ########.fr       */
+/*   Updated: 2023/02/09 17:39:03 by kboughal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,5 +73,5 @@ int		ft_get_timer_diff(t_philosopher *philos);
 void	clean_semaphores(t_sem_define *sem_collection);
 void	*monitor_death(void *arg);
 void	philosopher_routine(t_philosopher *philo);
-void	*monitor_food_fun(void *args);
+void	*monitor_food(void *args);
 #	endif
