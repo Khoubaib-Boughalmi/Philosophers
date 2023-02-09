@@ -5,49 +5,38 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: kboughal <kboughal@student.1337.ma >       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/02/07 18:15:42 by kboughal          #+#    #+#             */
-/*   Updated: 2023/02/08 19:38:53 by kboughal         ###   ########.fr       */
+/*   Created: 2023/02/07 20:26:16 by kboughal          #+#    #+#             */
+/*   Updated: 2023/02/08 19:48:06 by kboughal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philosophers.h"
 
-void	*monitor_death(void *arg)
+int	ft_monitor(t_in *u_in, t_philosopher *philos)
 {
-	t_philosopher	*philo;
+	int		i;
+	int		total;
 
-	philo = ((t_philosopher *)arg);
+	total = 0;
 	while (1)
 	{
-		usleep(10);
-		if (ft_get_timer_diff(philo) >= philo->u_in->ttd)
+		i = -1;
+		usleep(600);
+		while (++i < u_in->nop)
 		{
-			sem_post(philo->u_in->sem_collection.death);
-			return (0);
+			if (ft_get_timer_diff(&philos[i]) >= u_in->ttd)
+			{
+				my_print("died", &philos[i]);
+				return (0);
+			}
+			if (philos[i].pmeals == u_in->tmeals && philos[i].lock && \
+					u_in->tmeals != -1)
+			{
+				total++;
+				philos[i].lock = 0;
+				if (total == u_in->nop)
+					return (0);
+			}
 		}
-	}	
-}
-
-void	*monitor_food_fun(void *args)
-{
-	t_philosopher	*philos;
-	t_in			*common;
-	int				i;
-
-	i = 0;
-	philos = ((t_philosopher *)args);
-	common = philos[0].u_in;
-	while (i < common->tmeals * common->nop)
-	{
-		sem_wait(common->sem_collection.food);
-		i++;
 	}
-	i = -1;
-	while (++i < common->nop)
-	{
-		kill(philos[i].id, SIGKILL);
-	}
-	free(common);
-	free(philos);
-	exit(0);
 }

@@ -6,7 +6,7 @@
 /*   By: kboughal <kboughal@student.1337.ma >       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/28 17:23:39 by kboughal          #+#    #+#             */
-/*   Updated: 2023/02/07 18:58:32 by kboughal         ###   ########.fr       */
+/*   Updated: 2023/02/07 20:01:12 by kboughal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ int	parse_args(int argc, char *argv[], t_in **u_in)
 	}
 	(*u_in)->nop = ft_atoi(argv[1]);
 	(*u_in)->ttd = ft_atoi(argv[2]);
-	(*u_in)->tte = ft_atoi(argv[3]);	
+	(*u_in)->tte = ft_atoi(argv[3]);
 	(*u_in)->tts = ft_atoi(argv[4]);
 	if (argc == 6)
 		(*u_in)->tmeals = ft_atoi(argv[5]);

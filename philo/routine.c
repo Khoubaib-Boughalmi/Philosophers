@@ -5,42 +5,36 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: kboughal <kboughal@student.1337.ma >       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/02/07 18:14:28 by kboughal          #+#    #+#             */
-/*   Updated: 2023/02/08 19:39:51 by kboughal         ###   ########.fr       */
+/*   Created: 2023/02/07 20:06:07 by kboughal          #+#    #+#             */
+/*   Updated: 2023/02/08 19:10:55 by kboughal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "./philosophers.h"
+#include "philosophers.h"
 
-void	philosopher_routine_core(t_philosopher *philo)
+void	*philosopher_routine(void *arg)
 {
+	t_philosopher	*philo;
+
+	philo = ((t_philosopher *)arg);
 	while (1)
-	{	
-		sem_wait(philo->u_in->sem_collection.forks);
+	{
+		pthread_mutex_lock(&(philo->u_in->forks[philo->right]));
 		my_print("has taken a fork", philo);
-		sem_wait(philo->u_in->sem_collection.forks);
+		pthread_mutex_lock(&(philo->u_in->forks[philo->left]));
 		my_print("has taken a fork", philo);
 		my_print("is eating", philo);
-		ft_pause(philo, 'e');
+		pthread_mutex_lock(&(philo->u_in->c_lock));
 		philo->last_meal = ft_get_time();
-		sem_post(philo->u_in->sem_collection.forks);
-		sem_post(philo->u_in->sem_collection.forks);
+		pthread_mutex_unlock(&(philo->u_in->c_lock));
+		ft_philo_pause(philo, 'e');
+		pthread_mutex_lock(&(philo->u_in->m_lock));
+		philo->pmeals += 1;
+		pthread_mutex_unlock(&(philo->u_in->m_lock));
+		pthread_mutex_unlock(&(philo->u_in->forks[philo->right]));
+		pthread_mutex_unlock(&(philo->u_in->forks[philo->left]));
 		my_print("is sleeping", philo);
-		if (philo->u_in->tmeals != -1)
-			sem_post(philo->u_in->sem_collection.food);
-		ft_pause(philo, 's');
+		ft_philo_pause(philo, 's');
 		my_print("is thinking", philo);
 	}
-}
-
-void	philosopher_routine(t_philosopher *philo)
-{
-	int	i;
-
-	i = -1;
-	while (++i < philo->u_in->tmeals)
-		sem_wait(philo->u_in->sem_collection.food);
-	sem_wait(philo->u_in->sem_collection.death);
-	pthread_create(&philo->monitor, NULL, monitor_death, philo);
-	philosopher_routine_core(philo);
 }

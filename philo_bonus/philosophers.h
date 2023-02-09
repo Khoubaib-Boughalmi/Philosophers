@@ -6,7 +6,7 @@
 /*   By: kboughal <kboughal@student.1337.ma >       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/14 16:10:37 by kboughal          #+#    #+#             */
-/*   Updated: 2023/02/07 18:19:55 by kboughal         ###   ########.fr       */
+/*   Updated: 2023/02/08 19:30:21 by kboughal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,7 @@ typedef struct s_philosopher
 }	t_philosopher;
 
 void	ft_bzero(void *s, size_t n);
-int		ft_atoi(const char *ptr);
+int		ft_atoi(char *ptr);
 int		create_philos_even(t_in *u_in, t_philosopher *philo);
 int		create_philos_odd(t_in *u_in, t_philosopher *philo);
 int		create_philos(t_in *u_in, t_philosopher *philo);
@@ -73,4 +73,5 @@ int		ft_get_timer_diff(t_philosopher *philos);
 void	clean_semaphores(t_sem_define *sem_collection);
 void	*monitor_death(void *arg);
 void	philosopher_routine(t_philosopher *philo);
+void	*monitor_food_fun(void *args);
 #	endif

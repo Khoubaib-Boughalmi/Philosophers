@@ -1,5 +1,5 @@
-NAME 			= philosphers
-BONUS_NAME 		= philosphers_bonus
+NAME 			= philosophers
+BONUS_NAME 		= philosophers_bonus
 CFLAGS 			= -Wall -Wextra -Werror
 CC 				= cc
 RM 				= rm -f
@@ -8,8 +8,10 @@ SRCS_MAND=  ./philo/init.c \
 			./philo/main.c \
 			./philo/parse.c \
 			./philo/time.c \
-			./philo/utils.c
-
+			./philo/utils.c \
+			./philo/routine.c \
+			./philo/monitor.c 
+			
 SRCS_BONUS= ./philo_bonus/init.c \
 			./philo_bonus/main.c \
 			./philo_bonus/parse.c \

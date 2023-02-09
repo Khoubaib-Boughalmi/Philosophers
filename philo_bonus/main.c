@@ -6,7 +6,7 @@
 /*   By: kboughal <kboughal@student.1337.ma >       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/14 16:30:12 by kboughal          #+#    #+#             */
-/*   Updated: 2023/02/07 19:49:28 by kboughal         ###   ########.fr       */
+/*   Updated: 2023/02/08 20:06:55 by kboughal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,27 +34,7 @@ int	create_philos(t_in *u_in, t_philosopher *philo)
 	return (1);
 }
 
-void	*monitor_food_fun(void *args)
-{
-	t_philosopher	*philos;
-	t_in			*common;
-	int				i;
-
-	i = 0;
-	philos = ((t_philosopher *)args);
-	common = philos[0].u_in;
-	while (i < common->tmeals * common->nop)
-	{
-		sem_wait(common->sem_collection.food);
-		i++;
-	}
-	i = -1;
-	while (++i < common->nop)
-		kill(philos[i].id, SIGKILL);
-	exit(0);
-}
-
-void ft_terminate(t_in *u_in, t_philosopher *philos)
+void	ft_terminate(t_in *u_in, t_philosopher *philos)
 {
 	int	i;
 
@@ -69,6 +49,8 @@ void ft_terminate(t_in *u_in, t_philosopher *philos)
 	if (u_in->tmeals != -1)
 		sem_post(u_in->sem_collection.food);
 	clean_semaphores(&u_in->sem_collection);
+	free(u_in);
+	free(philos)
 }
 
 int	main(int argc, char *argv[])

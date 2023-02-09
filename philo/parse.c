@@ -6,7 +6,7 @@
 /*   By: kboughal <kboughal@student.1337.ma >       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/01/28 17:23:39 by kboughal          #+#    #+#             */
-/*   Updated: 2023/02/07 19:25:11 by kboughal         ###   ########.fr       */
+/*   Updated: 2023/02/08 19:28:56 by kboughal         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ int	parse_args(int argc, char *argv[], t_in **u_in)
 		return (0);
 	while (i < argc)
 	{
-		if (ft_atoi(argv[i]) < 0)
+		if (ft_atoi(argv[i]) <= 0)
 			return (0);
 		i++;
 	}
