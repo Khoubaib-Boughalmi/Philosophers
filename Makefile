@@ -40,7 +40,7 @@ clean:
 		${RM} ${M_OBJ} ${B_OBJ}
 	
 fclean:	clean
-		${RM} ${B_OBJ} ${BONUS_NAME}
+		${RM} ${BONUS_NAME} ${NAME}
 
 re:	fclean all
 
